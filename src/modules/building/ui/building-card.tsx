@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, MapPin, UserRound } from 'lucide-react';
+import { Building2, MapPin } from 'lucide-react';
 import Image from 'next/image';
 
 import { getBuildingImages } from '@/modules/building/lib/building-catalog';
@@ -10,7 +10,7 @@ import {
 } from '@/modules/building/lib/building-view-helpers';
 import type { Building } from '@/modules/building/model/building-types';
 import type { BuildingsTranslator } from '@/modules/building/ui/building-metadata';
-import { BuilderNames, BuildingTypeBadge } from '@/modules/building/ui/building-metadata';
+import { BuilderSummary, BuildingTypeBadge } from '@/modules/building/ui/building-metadata';
 
 interface BuildingCardProps {
   building: Building;
@@ -96,8 +96,7 @@ export function BuildingCard({
           {building.coordinates.x}, {building.coordinates.y}, {building.coordinates.z}
         </span>
         <span className="builders">
-          <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
-          <BuilderNames builders={building.builders} compact />
+          <BuilderSummary builders={building.builders} compact />
         </span>
       </div>
     </button>

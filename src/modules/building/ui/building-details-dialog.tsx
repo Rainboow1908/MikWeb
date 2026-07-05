@@ -1,7 +1,8 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import type { Transition } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MapPin, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useId, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -13,7 +14,12 @@ import {
 } from '@/modules/building/lib/building-view-helpers';
 import type { Building, LocalizedText } from '@/modules/building/model/building-types';
 import type { BuildingsTranslator } from '@/modules/building/ui/building-metadata';
-import { BuildingTags, BuildingTypeBadge } from '@/modules/building/ui/building-metadata';
+import {
+  BuilderNames,
+  BuildingSourceDetails,
+  BuildingTags,
+  BuildingTypeBadge,
+} from '@/modules/building/ui/building-metadata';
 
 interface BuildingDetailsDialogProps {
   activeImage: string | undefined;
@@ -57,14 +63,19 @@ export function BuildingDetailsDialog({
   t,
 }: BuildingDetailsDialogProps) {
   const titleId = useId();
+  const shouldReduceMotion = useReducedMotion();
   const buildingKey = building
     ? `${building.coordinates.x}:${building.coordinates.y}:${building.coordinates.z}:${building.buildDate}`
     : null;
   const [expandedState, setExpandedState] = useState<{
     buildingKey: string | null;
     expanded: boolean;
-  }>({ buildingKey: null, expanded: false });
+  }>({ buildingKey, expanded: Boolean(buildingKey) });
   const expanded = expandedState.buildingKey === buildingKey && expandedState.expanded;
+
+  useEffect(() => {
+    setExpandedState({ buildingKey, expanded: Boolean(buildingKey) });
+  }, [buildingKey]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -95,6 +106,9 @@ export function BuildingDetailsDialog({
 
   const buildingName = getBuildingName(building, locale);
   const hasMultipleImages = imageUrls.length > 1;
+  const panelTransition: Transition = shouldReduceMotion
+    ? { duration: 0 }
+    : { duration: 0.34, ease: [0.22, 1, 0.36, 1] };
 
   return createPortal(
     <AnimatePresence>
@@ -152,7 +166,9 @@ export function BuildingDetailsDialog({
           {/* Loading overlay */}
           {imageLoading && activeImage && !isImageError(activeImage) ? (
             <div className="building-archive-stage-loader">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+              <span className="building-archive-loader" aria-hidden="true">
+                <span className="building-archive-loader__core" />
+              </span>
             </div>
           ) : null}
         </div>
@@ -180,90 +196,111 @@ export function BuildingDetailsDialog({
         ) : null}
 
         {/* Bottom info bar */}
-        <div className="building-archive-info-bar">
-          <div className="building-archive-info-bar__main">
-            <div className="building-archive-info-bar__left">
-              {/* Type badge + name */}
-              <div className="building-archive-info-bar__header">
-                <BuildingTypeBadge buildType={building.buildType} compact t={t} />
-                <h2 id={titleId}>{buildingName}</h2>
+        <div className="building-archive-info-bar-frame">
+          <motion.div
+            layout
+            transition={panelTransition}
+            className={`building-archive-info-bar ${expanded ? 'is-expanded' : 'is-collapsed'}`}
+          >
+            <motion.div layout="position" className="building-archive-info-bar__main">
+              <div className="building-archive-info-bar__left">
+                {/* Type badge + name */}
+                <div className="building-archive-info-bar__header">
+                  <BuildingTypeBadge buildType={building.buildType} compact t={t} />
+                  <h2 id={titleId}>{buildingName}</h2>
+                </div>
+
+                <div className="building-archive-info-bar__meta-grid">
+                  <span className="building-archive-info-bar__meta-item building-archive-info-bar__meta-item--wide">
+                    <span className="building-archive-info-bar__builder-pills">
+                      <BuilderNames builders={building.builders} compact />
+                    </span>
+                  </span>
+                  <span className="building-archive-info-bar__meta-item">
+                    <MapPin
+                      className="building-archive-info-bar__meta-icon h-3.5 w-3.5"
+                      aria-hidden="true"
+                    />
+                    <span className="building-archive-info-bar__meta-value">
+                      {building.coordinates.x}, {building.coordinates.y}, {building.coordinates.z}
+                    </span>
+                  </span>
+                  <span className="building-archive-info-bar__meta-item">
+                    <CalendarDays
+                      className="building-archive-info-bar__meta-icon h-3.5 w-3.5"
+                      aria-hidden="true"
+                    />
+                    <span className="building-archive-info-bar__meta-value">
+                      {formatDate(building.buildDate)}
+                    </span>
+                  </span>
+                </div>
               </div>
 
-              {/* Builders */}
-              <p className="building-archive-info-bar__builders">
-                {building.builders.map((b) => b.name).join(', ')}
-              </p>
+              <div className="building-archive-info-bar__right">
+                {/* Image dots */}
+                {hasMultipleImages ? (
+                  <div className="building-archive-dots">
+                    {imageUrls.map((url, i) => (
+                      <button
+                        key={url}
+                        type="button"
+                        onClick={() => onSelectImage(i, imageUrls)}
+                        aria-label={t('dialog.currentImage', {
+                          current: i + 1,
+                          total: imageUrls.length,
+                        })}
+                        className={i === currentImageIndex ? 'is-active' : ''}
+                      />
+                    ))}
+                  </div>
+                ) : null}
 
-              {/* Meta row: coords + date */}
-              <p className="building-archive-info-bar__meta">
-                <span>
-                  {building.coordinates.x}, {building.coordinates.y}, {building.coordinates.z}
-                </span>
-                <span className="building-archive-info-bar__meta-sep">·</span>
-                <span>{formatDate(building.buildDate)}</span>
-              </p>
-            </div>
+                {/* Expand toggle */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExpandedState((previousState) => ({
+                      buildingKey,
+                      expanded:
+                        previousState.buildingKey === buildingKey ? !previousState.expanded : true,
+                    }))
+                  }
+                  aria-label={expanded ? '收起详情' : '展开详情'}
+                  className={`building-archive-info-bar__expand ${expanded ? 'is-expanded' : ''}`}
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
 
-            <div className="building-archive-info-bar__right">
-              {/* Image dots */}
-              {hasMultipleImages ? (
-                <div className="building-archive-dots">
-                  {imageUrls.map((url, i) => (
-                    <button
-                      key={url}
-                      type="button"
-                      onClick={() => onSelectImage(i, imageUrls)}
-                      aria-label={t('dialog.currentImage', {
-                        current: i + 1,
-                        total: imageUrls.length,
-                      })}
-                      className={i === currentImageIndex ? 'is-active' : ''}
-                    />
-                  ))}
-                </div>
-              ) : null}
-
-              {/* Expand toggle */}
-              <button
-                type="button"
-                onClick={() =>
-                  setExpandedState((previousState) => ({
-                    buildingKey,
-                    expanded:
-                      previousState.buildingKey === buildingKey ? !previousState.expanded : true,
-                  }))
-                }
-                aria-label={expanded ? '收起详情' : '展开详情'}
-                className={`building-archive-info-bar__expand ${expanded ? 'is-expanded' : ''}`}
-              >
-                <ChevronDown className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Expanded details */}
-          <AnimatePresence>
-            {expanded ? (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="building-archive-info-expanded"
-              >
+            {/* Expanded details */}
+            <div
+              className={`building-archive-info-expanded ${expanded ? 'is-expanded' : 'is-collapsed'}`}
+              aria-hidden={!expanded}
+            >
+              <div className="building-archive-info-expanded__clip">
                 <div className="building-archive-info-expanded__inner">
-                  <p className="building-archive-info-expanded__desc">
-                    {getBuildingDescription(building, locale)}
-                  </p>
+                  <div className="building-archive-info-expanded__body">
+                    <p className="building-archive-info-expanded__desc">
+                      {getBuildingDescription(building, locale)}
+                    </p>
+                    <BuildingSourceDetails building={building} locale={locale} compact t={t} />
+                  </div>
                   {building.tags && building.tags.length > 0 ? (
                     <div className="building-archive-info-expanded__tags">
-                      <BuildingTags building={building} getTagKey={getTagKey} locale={locale} />
+                      <BuildingTags
+                        building={building}
+                        getTagKey={getTagKey}
+                        locale={locale}
+                        compact
+                      />
                     </div>
                   ) : null}
                 </div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Click overlay background to close */}

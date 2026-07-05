@@ -5,6 +5,7 @@ import type { useTranslations } from 'next-intl';
 import { getBuildingSourceNotes } from '@/modules/building/lib/building-view-helpers';
 import type { Building, LocalizedText } from '@/modules/building/model/building-types';
 import { getLocalizedText, sortBuildersByWeight } from '@/modules/building/model/building-types';
+import MinecraftAvatar from '@/modules/player/ui/minecraft-avatar';
 
 export type BuildingsTranslator = ReturnType<typeof useTranslations<'buildings'>>;
 
@@ -93,32 +94,135 @@ interface BuilderNamesProps {
   compact?: boolean;
 }
 
+interface BuilderSummaryProps extends BuilderNamesProps {
+  maxVisible?: number;
+}
+
+const BUILDER_SUMMARY_RELATIVE_WEIGHT = 0.5;
+const BUILDER_SUMMARY_MIN_SHARE = 0.25;
+
+function getBuilderSummary(builders: Building['builders'], maxVisible: number) {
+  const sortedBuilders = sortBuildersByWeight(builders);
+
+  if (sortedBuilders.length <= maxVisible) {
+    return { visibleBuilders: sortedBuilders, hiddenBuilders: [] };
+  }
+
+  const topWeight = sortedBuilders[0]?.weight || 0;
+  const totalWeight = sortedBuilders.reduce(
+    (total, builder) => total + Math.max(builder.weight, 0),
+    0,
+  );
+  const visibleBuilders = sortedBuilders
+    .filter((builder, index) => {
+      if (index === 0) return true;
+
+      const relativeWeight = topWeight > 0 ? builder.weight / topWeight : 0;
+      const share = totalWeight > 0 ? builder.weight / totalWeight : 0;
+      return (
+        relativeWeight >= BUILDER_SUMMARY_RELATIVE_WEIGHT || share >= BUILDER_SUMMARY_MIN_SHARE
+      );
+    })
+    .slice(0, maxVisible);
+  const visibleBuilderIds = new Set(visibleBuilders.map((builder) => builder.uuid));
+
+  return {
+    visibleBuilders,
+    hiddenBuilders: sortedBuilders.filter((builder) => !visibleBuilderIds.has(builder.uuid)),
+  };
+}
+
+function BuilderPill({
+  builder,
+  compact,
+  primary,
+}: {
+  builder: Building['builders'][number];
+  compact: boolean;
+  primary: boolean;
+}) {
+  const avatarSize = compact ? 18 : 22;
+
+  return (
+    <span
+      className={`building-builder-pill ${compact ? 'building-builder-pill--compact' : ''} ${
+        primary ? 'building-builder-pill--primary' : ''
+      }`}
+    >
+      <MinecraftAvatar
+        uuid={builder.uuid}
+        name={builder.name}
+        size={avatarSize}
+        className="building-builder-pill__avatar"
+      />
+      <span className="building-builder-pill__name">{builder.name}</span>
+    </span>
+  );
+}
+
+function BuilderAvatarStack({
+  builders,
+  compact,
+}: {
+  builders: Building['builders'];
+  compact: boolean;
+}) {
+  if (builders.length === 0) {
+    return null;
+  }
+
+  const avatarSize = compact ? 18 : 20;
+  const shownBuilders = builders.slice(0, 3);
+
+  return (
+    <span className="building-builder-stack" role="img" aria-label={`+${builders.length}`}>
+      {shownBuilders.map((builder) => (
+        <MinecraftAvatar
+          key={builder.uuid}
+          uuid={builder.uuid}
+          name={builder.name}
+          size={avatarSize}
+          className="building-builder-stack__avatar"
+        />
+      ))}
+      <span className="building-builder-stack__count">+{builders.length}</span>
+    </span>
+  );
+}
+
+export function BuilderSummary({ builders, compact = false, maxVisible = 3 }: BuilderSummaryProps) {
+  const { visibleBuilders, hiddenBuilders } = getBuilderSummary(builders, maxVisible);
+  const maxWeight = visibleBuilders[0]?.weight || 100;
+
+  return (
+    <span className="building-builder-summary">
+      {visibleBuilders.map((builder) => (
+        <BuilderPill
+          key={builder.uuid}
+          builder={builder}
+          compact={compact}
+          primary={builder.weight === maxWeight}
+        />
+      ))}
+      <BuilderAvatarStack builders={hiddenBuilders} compact={compact} />
+    </span>
+  );
+}
+
 export function BuilderNames({ builders, compact = false }: BuilderNamesProps) {
   const sortedBuilders = sortBuildersByWeight(builders);
   const maxWeight = sortedBuilders[0]?.weight || 100;
 
-  return sortedBuilders.map((builder, index) => {
+  return sortedBuilders.map((builder) => {
     const isMainContributor = builder.weight === maxWeight;
 
     return (
-      <span
+      <BuilderPill
         key={builder.uuid}
-        className="transition-colors duration-200"
-        style={{
-          color: 'var(--theme-accent-green-strong)',
-          fontWeight: isMainContributor ? 650 : 500,
-          fontSize: compact
-            ? isMainContributor
-              ? '0.875rem'
-              : '0.8125rem'
-            : isMainContributor
-              ? '1rem'
-              : '0.875rem',
-        }}
-      >
-        {builder.name}
-        {index < builders.length - 1 && ' '}
-      </span>
+        builder={builder}
+        compact={compact}
+        primary={isMainContributor}
+      />
     );
   });
 }

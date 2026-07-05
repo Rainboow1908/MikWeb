@@ -76,14 +76,11 @@ export function BuildingsContentArea({
       next={loadMore}
       hasMore={hasMore}
       loader={
-        <div className="py-8 text-center">
-          <div
-            className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"
-            style={{
-              borderColor: 'var(--theme-accent-green-strong)',
-              borderTopColor: 'transparent',
-            }}
-          />
+        <div className="building-archive-scroll-loader" role="status" aria-live="polite">
+          <span className="building-archive-loader" aria-hidden="true">
+            <span className="building-archive-loader__core" />
+          </span>
+          <span className="sr-only">{loadingMessage}</span>
         </div>
       }
       endMessage={

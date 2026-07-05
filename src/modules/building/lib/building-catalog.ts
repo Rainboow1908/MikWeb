@@ -15,10 +15,10 @@ export const BUILDING_SORT_KEYS = [
 ] as const satisfies readonly BuildingSortKey[];
 
 export const BUILDING_MASONRY_BREAKPOINT_COLUMNS = {
-  default: 3,
-  1536: 3,
+  default: 4,
+  1536: 4,
   1280: 3,
-  1024: 2,
+  900: 2,
   640: 1,
 } as const;
 
