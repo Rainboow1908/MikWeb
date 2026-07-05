@@ -37,31 +37,19 @@ export function BuildingCatalogControls({
     <div className="building-catalog-controls">
       {/* Search + Sort row — clean, minimal */}
       <div className="building-catalog-controls__bar">
-        <div className="flex-1 relative">
-          <Search
-            className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 h-4 w-4"
-            style={{ color: 'var(--theme-text-dim)' }}
-          />
+        <label className="building-catalog-controls__search">
+          <Search className="building-catalog-controls__search-icon" aria-hidden="true" />
           <input
             type="text"
             placeholder={searchPlaceholder}
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
-            className="w-full bg-transparent border-0 border-b py-2.5 pl-7 pr-2 text-sm outline-none transition-colors"
-            style={{
-              color: 'var(--theme-text-primary)',
-              borderColor: 'var(--theme-border-glass)',
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--theme-accent-green-strong)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--theme-border-glass)';
-            }}
+            className="building-catalog-controls__search-input"
           />
-        </div>
+        </label>
 
-        <div className="shrink-0 relative">
+        <label className="building-catalog-controls__sort">
+          <ArrowUpDown className="building-catalog-controls__sort-icon" aria-hidden="true" />
           <select
             value={sortBy}
             onChange={(event) => {
@@ -69,17 +57,7 @@ export function BuildingCatalogControls({
                 onSortChange(event.target.value);
               }
             }}
-            className="cursor-pointer appearance-none bg-transparent border-0 border-b py-2.5 pl-1 pr-6 text-sm outline-none transition-colors"
-            style={{
-              color: 'var(--theme-text-muted-soft)',
-              borderColor: 'var(--theme-border-glass)',
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--theme-accent-green-strong)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--theme-border-glass)';
-            }}
+            className="building-catalog-controls__sort-select"
           >
             {sortOptions.map((sortOption) => (
               <option key={sortOption.id} value={sortOption.id}>
@@ -87,11 +65,7 @@ export function BuildingCatalogControls({
               </option>
             ))}
           </select>
-          <ArrowUpDown
-            className="pointer-events-none absolute top-1/2 right-0 -translate-y-1/2 h-3.5 w-3.5"
-            style={{ color: 'var(--theme-text-dim)' }}
-          />
-        </div>
+        </label>
       </div>
 
       {/* Filter tags */}
@@ -103,11 +77,7 @@ export function BuildingCatalogControls({
               type="button"
               key={filterOption.id}
               onClick={() => onFilterChange(filterOption.id)}
-              style={{
-                color: isActive ? 'var(--theme-accent-green-strong)' : 'var(--theme-text-muted)',
-                background: isActive ? 'rgba(121, 184, 111, 0.1)' : 'transparent',
-                border: isActive ? '1px solid rgba(121, 184, 111, 0.2)' : '1px solid transparent',
-              }}
+              className={isActive ? 'is-active' : undefined}
             >
               {filterOption.label}
             </button>

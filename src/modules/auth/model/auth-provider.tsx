@@ -15,12 +15,8 @@ interface AuthProviderProps {
 const AUTH_ACCOUNT_SNAPSHOT_KEY = 'mikweb:auth-account:v1';
 
 export function AuthProvider({ children, initialSessionPresent }: AuthProviderProps) {
-  const initialAccount = useMemo(
-    () => (initialSessionPresent ? readStoredAuthAccount() : null),
-    [initialSessionPresent],
-  );
-  const [account, setAccount] = useState<AuthAccount | null>(initialAccount);
-  const [isLoading, setIsLoading] = useState(initialSessionPresent && !initialAccount);
+  const [account, setAccount] = useState<AuthAccount | null>(null);
+  const [isLoading, setIsLoading] = useState(initialSessionPresent);
 
   const refresh = useCallback(async (options: { silent?: boolean } = {}) => {
     if (!options.silent) {
@@ -59,12 +55,24 @@ export function AuthProvider({ children, initialSessionPresent }: AuthProviderPr
 
   useEffect(() => {
     if (initialSessionPresent) {
-      void refresh({ silent: Boolean(initialAccount) });
+      const storedAccount = readStoredAuthAccount();
+
+      if (storedAccount) {
+        setAccount(storedAccount);
+        setIsLoading(false);
+        void refresh({ silent: true });
+        return;
+      }
+
+      void refresh();
       return;
     }
+
     removeStoredAuthAccount();
     clearFetchValidatedJsonBrowserCache({ prefix: 'account:' });
-  }, [initialAccount, initialSessionPresent, refresh]);
+    setAccount(null);
+    setIsLoading(false);
+  }, [initialSessionPresent, refresh]);
 
   const value = useMemo(
     () => ({
