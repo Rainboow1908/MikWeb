@@ -41,70 +41,30 @@ export function WikiSearchResults({
           }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="mb-6">
-            <p
-              className="mb-2 text-sm uppercase tracking-[0.2em]"
-              style={{ color: 'var(--theme-text-muted)' }}
-            >
-              {resultsLabel}
-            </p>
-            <h2
-              className="text-2xl font-semibold sm:text-3xl"
-              style={{ color: 'var(--theme-text-heading)' }}
-            >
-              {resultsCountLabel}
-            </h2>
+          <div className="wiki-search-results__header">
+            <p className="wiki-search-results__label">{resultsLabel}</p>
+            <h2 className="wiki-search-results__title">{resultsCountLabel}</h2>
           </div>
 
           {results.length > 0 ? (
-            <div className="space-y-4">
+            <div className="wiki-search-results__list">
               {results.map((result) => (
                 <button
                   type="button"
                   key={`${result.sectionId}-${result.slug || result.heading}`}
                   onClick={() => onOpenResult(result)}
-                  className="w-full rounded-xl p-4 text-left transition-all"
-                  style={{
-                    background: 'var(--theme-surface-modal-badge)',
-                    border: '1px solid var(--theme-border-glass-light)',
-                  }}
+                  className="wiki-search-results__item"
                 >
-                  <p
-                    className="mb-2 text-xs uppercase tracking-[0.16em]"
-                    style={{ color: 'var(--theme-text-muted)' }}
-                  >
-                    {result.path}
-                  </p>
-                  <h3
-                    className="mb-2 text-lg font-semibold"
-                    style={{ color: 'var(--theme-text-heading)' }}
-                  >
-                    {result.heading}
-                  </h3>
-                  <p
-                    className="text-sm leading-relaxed"
-                    style={{ color: 'var(--theme-text-muted-strong)' }}
-                  >
-                    {result.snippet}
-                  </p>
+                  <p className="wiki-search-results__path">{result.path}</p>
+                  <h3 className="wiki-search-results__heading">{result.heading}</h3>
+                  <p className="wiki-search-results__snippet">{result.snippet}</p>
                 </button>
               ))}
             </div>
           ) : (
-            <div
-              className="rounded-xl p-6 sm:p-8"
-              style={{
-                background: 'var(--theme-surface-modal-badge)',
-                border: '1px solid var(--theme-border-glass-light)',
-              }}
-            >
-              <h3
-                className="mb-3 text-xl font-semibold"
-                style={{ color: 'var(--theme-text-heading)' }}
-              >
-                {emptyTitle}
-              </h3>
-              <p style={{ color: 'var(--theme-text-muted-strong)' }}>{emptyDescription}</p>
+            <div className="wiki-search-results__empty">
+              <h3>{emptyTitle}</h3>
+              <p>{emptyDescription}</p>
             </div>
           )}
         </motion.div>

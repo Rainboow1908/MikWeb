@@ -14,30 +14,16 @@ export function WikiOutlineLinks({ items, label, onOpen }: WikiOutlineLinksProps
   }
 
   return (
-    <div
-      className="not-prose mb-8 border-b pb-5"
-      style={{ borderColor: 'var(--theme-border-glass-light)' }}
-    >
-      <p
-        className="mb-3 text-xs uppercase tracking-[0.2em]"
-        style={{ color: 'var(--theme-text-muted)' }}
-      >
-        {label}
-      </p>
+    <div className="wiki-outline-links not-prose">
+      <p className="wiki-outline-links__label">{label}</p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="wiki-outline-links__items">
         {items.map((item) => (
           <button
             type="button"
             key={`${item.slug}-${item.heading}`}
             onClick={() => onOpen(item)}
-            className="rounded-full px-3 py-1.5 text-sm transition-colors"
-            style={{
-              background: 'transparent',
-              border: '1px solid var(--theme-border-glass-light)',
-              color: 'var(--theme-text-muted-strong)',
-              paddingLeft: item.level === 3 ? '1rem' : '0.75rem',
-            }}
+            className={`wiki-outline-links__item ${item.level === 3 ? 'wiki-outline-links__item--child' : ''}`}
           >
             {item.level === 3 ? `↳ ${item.heading}` : item.heading}
           </button>

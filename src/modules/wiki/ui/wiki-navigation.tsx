@@ -23,8 +23,8 @@ interface IndicatorRect {
 }
 
 const selectionBackgroundStyle = {
-  background: 'var(--theme-surface-hover)',
-  border: '1px solid var(--theme-border-blue-accent, rgba(96,165,250,.25))',
+  background: 'color-mix(in srgb, var(--theme-accent-green-strong) 9%, transparent)',
+  border: '1px solid color-mix(in srgb, var(--theme-accent-green-strong) 18%, transparent)',
 } as const;
 
 function FabIcon({ open }: { open: boolean }) {
@@ -179,7 +179,7 @@ export function WikiNavigation({
                 ease: [0.4, 0, 1, 1] as [number, number, number, number],
               },
             }}
-            className={`${wikiPanelSurfaceClassName} w-48 rounded-2xl p-3`}
+            className={`${wikiPanelSurfaceClassName} wiki-mobile-nav`}
             style={{
               transformOrigin: 'bottom right',
             }}
@@ -192,12 +192,7 @@ export function WikiNavigation({
             >
               {sectionGroups.map((group) => (
                 <div key={group.id}>
-                  <p
-                    className="mb-2 px-3 text-[11px] uppercase tracking-[0.18em]"
-                    style={{ color: 'var(--theme-text-muted)' }}
-                  >
-                    {group.label}
-                  </p>
+                  <p className="wiki-navigation__group-label">{group.label}</p>
                   <div className="space-y-1">
                     {group.sections.map((section) => {
                       const Icon = iconMap.get(section.icon) ?? BookOpen;
@@ -210,12 +205,7 @@ export function WikiNavigation({
                           variants={popupItem}
                           transition={spring.snappy}
                           onClick={() => onSectionChange(section.id)}
-                          className="relative flex w-full items-center gap-2 rounded-lg px-3 py-2"
-                          style={{
-                            color: isActive
-                              ? 'var(--theme-accent-blue)'
-                              : 'var(--theme-text-muted-soft)',
-                          }}
+                          className={`wiki-navigation__item wiki-navigation__item--mobile ${isActive ? 'is-active' : ''}`}
                           whileHover={{ x: 3, transition: spring.snappy }}
                           whileTap={{ scale: 0.95, transition: spring.snappy }}
                         >
@@ -235,12 +225,7 @@ export function WikiNavigation({
 
       <motion.button
         onClick={() => onSidebarOpenChange(!isSidebarOpen)}
-        className="rounded-full p-3.5 shadow-sm"
-        style={{
-          color: 'var(--theme-accent-blue)',
-          background: 'var(--theme-surface-modal)',
-          border: '1px solid var(--theme-border-blue-accent)',
-        }}
+        className="wiki-mobile-nav__button"
         whileHover={{ scale: 1.12, transition: spring.snappy }}
         whileTap={{ scale: 0.88, transition: spring.fab }}
       >
@@ -255,14 +240,12 @@ export function WikiNavigation({
 
       <aside className="hidden self-start lg:sticky lg:block" style={{ top: desktopStickyTop }}>
         <div
-          className={`${wikiPanelSurfaceClassName} rounded-2xl p-4`}
+          className={`${wikiPanelSurfaceClassName} wiki-navigation`}
           style={{
             maxHeight: desktopStickyMaxHeight,
           }}
         >
-          <h3 className="mb-4 px-2 font-semibold" style={{ color: 'var(--theme-text-heading)' }}>
-            {navigationLabel}
-          </h3>
+          <h3 className="wiki-navigation__title">{navigationLabel}</h3>
 
           <div
             className="relative"
@@ -286,12 +269,7 @@ export function WikiNavigation({
             >
               {sectionGroups.map((group) => (
                 <div key={group.id}>
-                  <p
-                    className="mb-2 px-2 text-[11px] uppercase tracking-[0.2em]"
-                    style={{ color: 'var(--theme-text-muted)' }}
-                  >
-                    {group.label}
-                  </p>
+                  <p className="wiki-navigation__group-label">{group.label}</p>
 
                   <div className="space-y-1">
                     {group.sections.map((section) => {
@@ -312,12 +290,7 @@ export function WikiNavigation({
                           }}
                           variants={navItem}
                           onClick={() => onSectionChange(section.id)}
-                          className="relative flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left"
-                          style={{
-                            color: isActive
-                              ? 'var(--theme-accent-blue)'
-                              : 'var(--theme-text-muted-soft)',
-                          }}
+                          className={`wiki-navigation__item ${isActive ? 'is-active' : ''}`}
                           whileHover={{
                             backgroundColor: 'var(--theme-surface-hover)',
                             x: isActive ? 0 : 4,
@@ -352,10 +325,7 @@ export function WikiNavigation({
 
                           <span className="relative z-10 min-w-0">
                             <span className="block text-sm font-medium">{section.label}</span>
-                            <span
-                              className="mt-1 block text-xs leading-relaxed"
-                              style={{ color: 'var(--theme-text-muted)' }}
-                            >
+                            <span className="wiki-navigation__item-description">
                               {section.description}
                             </span>
                           </span>

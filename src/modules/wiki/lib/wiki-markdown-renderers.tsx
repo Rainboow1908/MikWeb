@@ -23,11 +23,7 @@ export function createWikiMarkdownRenderers() {
       <motion.h1
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.h1 }}
-        style={{
-          color: 'var(--theme-text-heading)',
-          borderColor: 'var(--theme-border-glass-light)',
-        }}
-        className="mb-6 border-b pb-3 text-3xl font-bold"
+        className="wiki-markdown__h1"
       >
         {children}
       </motion.h1>
@@ -36,8 +32,7 @@ export function createWikiMarkdownRenderers() {
       <motion.h2
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.h2 }}
-        style={{ color: 'var(--theme-text-heading)' }}
-        className="mt-8 mb-4 text-2xl font-semibold"
+        className="wiki-markdown__h2"
       >
         {children}
       </motion.h2>
@@ -46,8 +41,7 @@ export function createWikiMarkdownRenderers() {
       <motion.h3
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.h3 }}
-        style={{ color: 'var(--theme-text-primary)' }}
-        className="mt-6 mb-3 text-xl font-semibold"
+        className="wiki-markdown__h3"
       >
         {children}
       </motion.h3>
@@ -56,8 +50,7 @@ export function createWikiMarkdownRenderers() {
       <motion.p
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.p }}
-        style={{ color: 'var(--theme-text-muted-strong)' }}
-        className="mb-4 leading-relaxed"
+        className="wiki-markdown__p"
       >
         {children}
       </motion.p>
@@ -66,8 +59,7 @@ export function createWikiMarkdownRenderers() {
       <motion.ul
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.list }}
-        style={{ color: 'var(--theme-text-muted-strong)' }}
-        className="mb-4 list-disc list-inside space-y-2"
+        className="wiki-markdown__list wiki-markdown__list--unordered"
       >
         {children}
       </motion.ul>
@@ -76,27 +68,19 @@ export function createWikiMarkdownRenderers() {
       <motion.ol
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.list }}
-        style={{ color: 'var(--theme-text-muted-strong)' }}
-        className="mb-4 list-decimal list-inside space-y-2"
+        className="wiki-markdown__list wiki-markdown__list--ordered"
       >
         {children}
       </motion.ol>
     ),
     li: ({ children }: React.PropsWithChildren) => (
-      <li style={{ color: 'var(--theme-text-muted-strong)' }} className="ml-4">
-        {children}
-      </li>
+      <li className="wiki-markdown__li">{children}</li>
     ),
     blockquote: ({ children }: React.PropsWithChildren) => (
       <motion.blockquote
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.block }}
-        style={{
-          background: 'var(--theme-surface-modal-badge)',
-          borderLeftColor: 'var(--theme-border-blue-accent)',
-          borderColor: 'var(--theme-border-glass-light)',
-        }}
-        className="my-4 rounded-lg border border-l-4 py-1 pl-4 [&>p:last-child]:mb-0 [&>p]:mb-0"
+        className="wiki-markdown__blockquote"
       >
         {children}
       </motion.blockquote>
@@ -105,11 +89,7 @@ export function createWikiMarkdownRenderers() {
       <motion.pre
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.block }}
-        style={{
-          background: 'var(--theme-surface-code-block)',
-          borderColor: 'var(--theme-border-glass-light)',
-        }}
-        className="mb-4 overflow-x-auto rounded-lg border p-4"
+        className="wiki-markdown__pre"
       >
         {children}
       </motion.pre>
@@ -118,31 +98,13 @@ export function createWikiMarkdownRenderers() {
       const isInline = !className;
 
       return isInline ? (
-        <code
-          style={{
-            background: 'var(--theme-surface-code)',
-            color: 'var(--theme-accent-blue-strong)',
-          }}
-          className="rounded px-1.5 py-0.5 font-mono text-sm"
-        >
-          {children}
-        </code>
+        <code className="wiki-markdown__code">{children}</code>
       ) : (
-        <code
-          style={{ color: 'var(--theme-accent-blue-strong)' }}
-          className="block font-mono text-sm"
-        >
-          {children}
-        </code>
+        <code className="wiki-markdown__code-block">{children}</code>
       );
     },
     a: ({ children, href }: React.PropsWithChildren<{ href?: string }>) => (
-      <a
-        href={href}
-        className="ui-content-link ui-content-link--blue"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href={href} className="wiki-markdown__link" target="_blank" rel="noopener noreferrer">
         {children}
       </a>
     ),
@@ -150,38 +112,17 @@ export function createWikiMarkdownRenderers() {
       <motion.div
         {...baseMotionProps}
         transition={{ ...spring.gentle, delay: markdownDelays.block }}
-        className="my-4 overflow-x-auto rounded-lg border"
-        style={{ borderColor: 'var(--theme-border-glass-light)' }}
+        className="wiki-markdown__table-wrap"
       >
-        <table className="w-full min-w-max table-auto [&_code]:whitespace-nowrap">{children}</table>
+        <table className="wiki-markdown__table">{children}</table>
       </motion.div>
     ),
-    thead: ({ children }: React.PropsWithChildren) => (
-      <thead style={{ background: 'var(--theme-surface-modal-badge)' }}>{children}</thead>
-    ),
+    thead: ({ children }: React.PropsWithChildren) => <thead>{children}</thead>,
     th: ({ children, node: _node, className: _className, ...props }: MarkdownTableCellProps) => (
-      <th
-        {...props}
-        style={{
-          color: 'var(--theme-text-heading)',
-          borderColor: 'var(--theme-border-glass-light)',
-        }}
-        className="border-b px-4 py-2 text-left align-top font-semibold"
-      >
-        {children}
-      </th>
+      <th {...props}>{children}</th>
     ),
     td: ({ children, node: _node, className: _className, ...props }: MarkdownTableCellProps) => (
-      <td
-        {...props}
-        style={{
-          color: 'var(--theme-text-muted-strong)',
-          borderColor: 'var(--theme-border-light)',
-        }}
-        className="border-b px-4 py-2 align-top leading-relaxed"
-      >
-        {children}
-      </td>
+      <td {...props}>{children}</td>
     ),
     br: () => <br />,
   };

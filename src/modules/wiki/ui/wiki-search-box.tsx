@@ -27,16 +27,13 @@ export function WikiSearchBox({
 }: WikiSearchBoxProps) {
   return (
     <motion.div
-      className="mb-6 sm:mb-8"
+      className="wiki-search-box"
       initial={false}
       animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       transition={{ ...spring.gentle, delay: 0.2 }}
     >
-      <div className="relative mx-auto max-w-3xl">
-        <Search
-          className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2"
-          style={{ color: 'var(--theme-text-muted)' }}
-        />
+      <div className="wiki-search-box__surface">
+        <Search className="wiki-search-box__icon" aria-hidden="true" />
         <input
           type="text"
           value={searchQuery}
@@ -44,20 +41,13 @@ export function WikiSearchBox({
           onCompositionStart={onCompositionStart}
           onCompositionEnd={onCompositionEnd}
           placeholder={placeholder}
-          className="w-full rounded-xl border px-12 py-3.5 pr-12 transition-colors focus:outline-none"
-          style={{
-            color: 'var(--theme-text-primary)',
-            background: 'var(--theme-surface-modal)',
-            borderColor: 'var(--theme-border-glass)',
-            boxShadow: '0 1px 2px var(--theme-shadow-glass)',
-          }}
+          className="wiki-search-box__input"
         />
         {searchQuery ? (
           <button
             type="button"
             onClick={onClear}
-            className="absolute top-1/2 right-3 -translate-y-1/2 rounded-lg p-2 transition-colors"
-            style={{ color: 'var(--theme-text-muted-soft)' }}
+            className="wiki-search-box__clear"
             aria-label={clearSearchLabel}
           >
             <X className="h-4 w-4" />

@@ -327,10 +327,10 @@ export default function WikiContent({
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="page-shell">
-        <div className="max-w-7xl mx-auto">
+      <div className="wiki-page page-shell">
+        <div className="wiki-page__inner">
           <motion.div
-            className="mb-6 sm:mb-8"
+            className="wiki-page__search"
             initial={false}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ ...spring.gentle, delay: 0.2 }}
@@ -352,7 +352,7 @@ export default function WikiContent({
             />
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] xl:grid-cols-[19rem_minmax(0,1fr)]">
+          <div className="wiki-page__layout">
             <WikiNavigation
               activeSection={activeSection}
               hasMounted={hasMounted}
@@ -365,12 +365,12 @@ export default function WikiContent({
             />
 
             <motion.div
-              className="min-w-0"
+              className="wiki-page__content-column"
               initial={false}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ ...spring.gentle, delay: 0.25 }}
             >
-              <div className={`${wikiPanelSurfaceClassName} rounded-2xl p-6 sm:p-8`}>
+              <div className={`${wikiPanelSurfaceClassName} wiki-page__content-panel`}>
                 <AnimatePresence mode="wait" initial={false}>
                   {isSearching ? (
                     <WikiSearchResults
@@ -399,7 +399,7 @@ export default function WikiContent({
                         },
                       }}
                       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                      className="prose prose-invert prose-blue max-w-none"
+                      className="wiki-markdown"
                     >
                       <WikiOutlineLinks
                         items={activeOutline}

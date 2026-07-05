@@ -53,7 +53,6 @@ For the full server experience, we also recommend adding the following mods:
 3. **[ImageFrame Client](https://modrinth.com/mod/imageframeclient)** - Improves the look of map art with full-color rendering
 4. **[Axiom](https://modrinth.com/mod/axiom)** - A powerful toolkit for large-scale building and editing
 5. **[Vivecraft](https://modrinth.com/mod/vivecraft)** - VR support
-6. **[FeatherMorphClient](https://modrinth.com/mod/feathermorphclient)** - Adds extra client-side controls for the Morph system, including a morph picker and skill shortcuts
 
 These are also worth installing, even though they are not specific to this server:
 
