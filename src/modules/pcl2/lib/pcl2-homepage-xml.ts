@@ -287,7 +287,7 @@ function buildStatusCard(data: Pcl2HomepageData): XamlNode {
       ]),
       xaml('local:MyHint', [
         attr('Margin', '0,0,0,8'),
-        attr('Text', '🎉 Mik 五周年庆典 7.18 - 7.25'),
+        attr('Text', '🎉 Mik 五周年庆典 7.18 - 7.25  ·  定制钥匙扣/小挂件等 Mik Logo 周边等你拿！'),
         attr('Theme', 'Yellow'),
       ]),
       sp(
