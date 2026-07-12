@@ -124,7 +124,8 @@ const PCL2_COPY = {
       tooltip: 'Click for a random quote',
     },
     hint: 'Use the button below to launch the game and join the server.',
-    anniversary: '🎉 Mik 5th Anniversary 7.18 - 7.25  ·  Custom keychains, charms & Mik Logo merch!',
+    anniversary:
+      '🎉 Mik 5th Anniversary 7.18 - 7.25  ·  Custom keychains, charms & Mik Logo merch!',
     links: {
       buildingsInfo: 'View all building showcases',
       buildingsTitle: 'Buildings',
