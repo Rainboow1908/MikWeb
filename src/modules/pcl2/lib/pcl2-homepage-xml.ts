@@ -285,6 +285,11 @@ function buildStatusCard(data: Pcl2HomepageData): XamlNode {
         attr('Text', copy.hint),
         attr('Theme', 'Blue'),
       ]),
+      xaml('local:MyHint', [
+        attr('Margin', '0,0,0,8'),
+        attr('Text', '🎉 Mik 五周年庆典 7.18 - 7.25'),
+        attr('Theme', 'Yellow'),
+      ]),
       sp(
         [attr('HorizontalAlignment', 'Center'), attr('Orientation', 'Horizontal')],
         [
